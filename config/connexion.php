@@ -1,9 +1,9 @@
 <?php
 class DbConnexion {
-	private $servername = "46.101.165.157";
-	private $username = "root";
-	private $password = "charf1990";
-	private $dbname = "test_exec";
+	private $servername = "";
+	private $username = "";
+	private $password = "";
+	private $dbname = "";
 
 	
 	public function connect() {
