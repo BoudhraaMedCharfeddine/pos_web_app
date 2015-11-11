@@ -72,7 +72,7 @@ $errorMessage = "";
 	<!-- BEGIN LOGO -->
 	<div class="logo">
 		<a href="#"> <img
-			src="ressources/assets/admin/layout3/img/Logo_mspos.png" alt="" />
+			src="ressources/assets/admin/layout3/img/logo_mspos.png" alt="" />
 		</a>
 	</div>
 	<!-- END LOGO -->

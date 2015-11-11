@@ -163,7 +163,7 @@ include '../header.php';
 								 * <th>Stock cost</th>
 								 */
 								?>
-										<th>Stock volume</th>
+										<th>Current Stock</th>
 										<th>In Stock</th>
 										<th>Out of Stock</th>
 										<th>Stock Difference</th>
@@ -193,7 +193,15 @@ include '../header.php';
 									<?php
 							
 							?>
-										<td><?php echo $stockVolume;?></td>
+										<td>
+										<?php
+						$sqlCurrentStock = "SELECT * FROM STOCKCURRENT WHERE PRODUCT = '$idProduct'";
+						$resultCurrentStock = $c->query ( $sqlCurrentStock );
+						while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
+							$currentStock = $rowCurrentStock ['UNITS'];
+						}
+						echo $currentStock;
+						?></td>
 									<?php
 							$inStock = 0;
 							$outOfStock = 0;
@@ -257,15 +265,19 @@ include '../header.php';
 						
 						$date_start_date = date ( $_POST ['start_date'] . " 00:00:00" );
 						$date_end_date = date ( $_POST ['end_date'] . " 23:59:59" );
+						$todayMorning = date ( "Y-m-d 00:00:00" );
+						$todayNight = date ( "Y-m-d 23:59:59" );
 						
-						if (! isset ( $_POST ['start_date'] )) {
+						if ($_POST ['start_date'] !="") {
+						$start = $date_start_date;
 						} else {
+						$start = $todayMorning;	
 						}
-						if (! isset ( $_POST ['end_date'] )) {
+						if ( $_POST ['end_date'] !="") {
+							$end = $date_end_date;
 						} else {
+							$end = $todayNight;
 						}
-						echo $date_start_date;
-						echo $date_end_date;
 						
 						while ( $row = $result->fetch_assoc () ) {
 							$idProduct = $row ['ID'];
@@ -287,7 +299,15 @@ include '../header.php';
 															<?php
 							
 							?>
-																<td><?php echo $stockVolume;?></td>
+																<td>
+										<?php
+						$sqlCurrentStock = "SELECT * FROM STOCKCURRENT WHERE PRODUCT = '$idProduct'";
+						$resultCurrentStock = $c->query ( $sqlCurrentStock );
+						while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
+							$currentStock = $rowCurrentStock ['UNITS'];
+						}
+						echo $currentStock;
+						?></td>
 															<?php
 							$inStock = 0;
 							$outOfStock = 0;
@@ -295,8 +315,8 @@ include '../header.php';
 							$today = date ( "Y-m-d 00:00:00" );
 							
 							$sqlOutOfStock = "SELECT SUM(UNITS) FROM  `STOCKDIARY`
-															 WHERE PRODUCT =  '$idProduct' AND (UNITS < 0) AND (DATENEW > '$date_start_date')
-															 AND (DATENEW < '$date_end_date')";
+															 WHERE PRODUCT =  '$idProduct' AND (UNITS < 0) AND (DATENEW > '$start')
+															 AND (DATENEW < '$end')";
 							
 							$resultOutOfStock = $c->query ( $sqlOutOfStock );
 							while ( $rowOutOfStock = $resultOutOfStock->fetch_assoc () ) {
@@ -304,8 +324,8 @@ include '../header.php';
 							}
 							
 							$sqlInStock = "SELECT SUM(UNITS) FROM  `STOCKDIARY`
-										   WHERE PRODUCT =  '$idProduct' AND (UNITS > 0) AND (DATENEW > '$date_start_date')
-															 AND (DATENEW < '$date_end_date')";
+										   WHERE PRODUCT =  '$idProduct' AND (UNITS > 0) AND (DATENEW > '$start')
+															 AND (DATENEW < '$end')";
 							
 							$resultInStock = $c->query ( $sqlInStock );
 							while ( $rowInStock = $resultInStock->fetch_assoc () ) {

@@ -3,15 +3,6 @@ include '../../security/check_session.php';
 include '../../config/connexion.php';
 $cs = new CheckSession ();
 
-/*
- * if (! $cs->check_user_session ()) {
- * // header("Location:".$_SERVER['DOCUMENT_ROOT'].'/index.php');
- * header ( "location:/lgproject/index.php" );
- * } /*
- * else if (! $cs->check_administrator ()) {
- * header ( "location:companys/companys.php" );
- * }
- */
 
 $dbc = new DbConnexion ();
 $c = $dbc->connect ();
@@ -108,8 +99,7 @@ include '../header.php';
 										<th>Price sell</th>
 										<th>Category</th>
 										<th>Tax Category</th>
-										<th>Stock cost</th>
-										<th>Stock volume</th>
+										<th>Current Stock</th>
 										<th>Daily Stock</th>
 
 									</tr>
@@ -155,8 +145,16 @@ include '../header.php';
 						echo $taxCategoryName;
 						?></td>
 
-										<td><?php echo $stockCost;?></td>
-										<td><?php echo $stockVolume;?></td>
+										<td>
+										<?php
+						$sqlCurrentStock = "SELECT * FROM STOCKCURRENT WHERE PRODUCT = '$idProduct'";
+						$resultCurrentStock = $c->query ( $sqlCurrentStock );
+						while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
+							$currentStock = $rowCurrentStock ['UNITS'];
+						}
+						echo $currentStock;
+						?></td>
+										</td>
 										<td>
 										<?php
 						$inStock = 0;
