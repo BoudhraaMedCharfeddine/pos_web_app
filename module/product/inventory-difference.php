@@ -3,6 +3,10 @@ include '../../security/check_session.php';
 include '../../config/connexion.php';
 $cs = new CheckSession ();
 
+if (! $cs->check_user_session ()) {
+	header("Location:".$_SERVER['DOCUMENT_ROOT'].'./index.php');
+}
+
 $dbc = new DbConnexion ();
 $c = $dbc->connect ();
 
@@ -100,7 +104,7 @@ include '../header.php';
 													</span>
 												</div>
 											</div>
-											<label class="control-label col-md-2">Start date</label>
+											<label class="control-label col-md-2">End date</label>
 											<div class="col-md-3">
 												<div class="input-group date date-picker"
 													data-date-format="yyyy-mm-dd">
@@ -142,7 +146,7 @@ include '../header.php';
 						</div>
 						<div class="portlet-body">
 							<?php
-							$sql = "SELECT * FROM PRODUCTS";
+							$sql = "SELECT * FROM PRODUCTS WHERE (ID IN (SELECT PRODUCT FROM PRODUCTS_CAT))";
 							$result = $c->query ( $sql );
 							
 							?>
@@ -154,15 +158,6 @@ include '../header.php';
 										<th>Reference</th>
 										<th>Code</th>
 										<th>Name</th>
-								<?php
-								/*
-								 * <th>Price buy</th>
-								 * <th>Price sell</th>
-								 * <th>Category</th>
-								 * <th>Tax Category</th>
-								 * <th>Stock cost</th>
-								 */
-								?>
 										<th>Current Stock</th>
 										<th>In Stock</th>
 										<th>Out of Stock</th>
@@ -200,7 +195,11 @@ include '../header.php';
 						while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
 							$currentStock = $rowCurrentStock ['UNITS'];
 						}
+						if(! isset($currentStock)){
+							echo "<center>-</center>";
+						}else{
 						echo $currentStock;
+						}
 						?></td>
 									<?php
 							$inStock = 0;

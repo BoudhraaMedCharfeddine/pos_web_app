@@ -3,6 +3,9 @@ include '../../security/check_session.php';
 include '../../config/connexion.php';
 $cs = new CheckSession ();
 
+if (! $cs->check_user_session ()) {
+	header ( "Location:" . $_SERVER ['DOCUMENT_ROOT'] . './index.php' );
+}
 
 $dbc = new DbConnexion ();
 $c = $dbc->connect ();
@@ -62,14 +65,65 @@ include '../header.php';
 			<!-- BEGIN PAGE BREADCRUMB -->
 			<ul class="page-breadcrumb breadcrumb">
 				<li><a href="#">Home</a><i class="fa fa-circle"></i></li>
-				<li><a href="#">Products Management</a> <i
-					class="fa fa-circle"></i></li>
+				<li><a href="#">Products Management</a> <i class="fa fa-circle"></i></li>
 				<li class="active">Products list</li>
 			</ul>
 			<!-- END PAGE BREADCRUMB -->
 			<!-- BEGIN PAGE CONTENT INNER -->
 			<div class="row">
 				<div class="col-md-12">
+					<!-- BEGIN -->
+					<div class="portlet light">
+						<div class="portlet-title">
+							<div class="caption">
+								<i class="fa fa-cogs font-green-sharp"></i> <span
+									class="caption-subject font-green-sharp bold uppercase">Select
+									Category</span>
+							</div>
+							<div class="tools">
+								<a href="javascript:;" class="remove"> </a>
+							</div>
+						</div>
+						<div class="portlet-body">
+							<div class="portlet-body form">
+								<!-- BEGIN FORM-->
+								<form method="POST" class="form-horizontal">
+									<div class="form-body">
+										<div class="form-group" style="margin-bottom: 2.5%;">
+											<label class="control-label col-md-2">Product Category</label>
+											<div class="col-md-4">
+												<select class="form-control select2me" name="category">
+													<?php
+													$sqlSelctCategories = "SELECT * FROM CATEGORIES ORDER BY (NAME)";
+													$result = $c->query ( $sqlSelctCategories );
+													?>
+																			
+													<option value="">All</option>
+													<?php while ( $rowSelCat = $result->fetch_assoc () ) {
+													$id_cat =$rowSelCat['ID'];
+													$name_cat =$rowSelCat['NAME'];
+													echo "<option value='$id_cat'>".$name_cat."</option>";
+													}
+													?>
+													</select>
+											</div>
+										</div>
+										<div class="form-actions">
+											<div class="row">
+												<div class="col-md-offset-3 col-md-9">
+													<button type="submit" name="btn_search" class="btn green"
+														style="margin-left: 68.1%; margin-bottom: -5%;">Search</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<!-- BEGIN -->
+
+
 					<!-- BEGIN EXAMPLE TABLE PORTLET-->
 					<div class="portlet light">
 						<div class="portlet-title">
@@ -84,8 +138,13 @@ include '../header.php';
 						</div>
 						<div class="portlet-body">
 							<?php
-							$sql = "SELECT * FROM PRODUCTS";
-							$result = $c->query ( $sql );
+							if(isset($_POST['btn_search'])){
+								$idCategory = $_POST['category'];
+								$sql = "SELECT * FROM PRODUCTS WHERE (CATEGORY = '$idCategory') AND
+								(ID IN (SELECT PRODUCT FROM PRODUCTS_CAT))";
+							}else{
+							$sql = "SELECT * FROM PRODUCTS WHERE (ID IN (SELECT PRODUCT FROM PRODUCTS_CAT))";
+							}
 							?>
 							
 								<table class="table table-striped table-hover table-bordered"
@@ -106,7 +165,7 @@ include '../header.php';
 								</thead>
 								<tbody>
 					<?php
-					
+					$result = $c->query ( $sql );
 					while ( $row = $result->fetch_assoc () ) {
 						$idProduct = $row ['ID'];
 						$reference = $row ['REFERENCE'];
@@ -152,7 +211,11 @@ include '../header.php';
 						while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
 							$currentStock = $rowCurrentStock ['UNITS'];
 						}
+						if(! isset($currentStock)){
+							echo "<center>-</center>";
+						}else{
 						echo $currentStock;
+						}
 						?></td>
 										</td>
 										<td>
@@ -170,7 +233,6 @@ include '../header.php';
 						while ( $rowOutOfStock = $resultOutOfStock->fetch_assoc () ) {
 							$outOfStock = $rowOutOfStock ['SUM(UNITS)'];
 						}
-						
 						
 						$sqlInStock = "SELECT SUM(UNITS)
 						FROM  `STOCKDIARY`
@@ -194,7 +256,8 @@ include '../header.php';
 													<div class="modal-content">
 														<div class="modal-header">
 															<button type="button" class="close" data-dismiss="modal">&times;</button>
-															<h4 class="modal-title">Stock Today Mouvement</h4><h2><?php echo date("Y-m-d");?></h2> 
+															<h4 class="modal-title">Stock Today Mouvement</h4>
+															<h2><?php echo date("Y-m-d");?></h2>
 														</div>
 														<form class="form-horizontal" role="form" name="f">
 															<div class="form-group">
@@ -208,12 +271,12 @@ include '../header.php';
 																	In:</label>
 																<div class="col-sm-10">
 																	<label class="control-label col-sm-2"><?php
-																					if ($inStock == null) {
-																						echo 0;
-																					} else {
-																						echo $inStock;
-																					}
-																					?></label>
+						if ($inStock == null) {
+							echo 0;
+						} else {
+							echo $inStock;
+						}
+						?></label>
 																</div>
 															</div>
 															<div class="form-group">
@@ -221,27 +284,28 @@ include '../header.php';
 																	Out</label>
 																<div class="col-sm-10">
 																	<label class="control-label col-sm-2"><?php
-																					if ($outOfStock == null) {
-																						echo 0;
-																					} else {
-																						echo abs($outOfStock);
-																					}
-																					?></label>
+						if ($outOfStock == null) {
+							echo 0;
+						} else {
+							echo abs ( $outOfStock );
+						}
+						?></label>
 																</div>
 															</div>
 															<div class="form-group">
 																<label class="control-label col-sm-2" for="Prenom">Difference</label>
 																<div class="col-sm-10">
 																	<label class="control-label col-sm-2"><?php
-																					$inValue = $inStock;
-																					$outValue = $outOfStock;
-																					if ($outOfStock == null) {
-																						$outValue =  0;
-																					}if ($inStock == null) {
-																						$inValue =  0;
-																					}
-																					echo ($inValue - abs($outValue));
-																					?></label>
+						$inValue = $inStock;
+						$outValue = $outOfStock;
+						if ($outOfStock == null) {
+							$outValue = 0;
+						}
+						if ($inStock == null) {
+							$inValue = 0;
+						}
+						echo ($inValue - abs ( $outValue ));
+						?></label>
 																</div>
 															</div>
 														</form>
