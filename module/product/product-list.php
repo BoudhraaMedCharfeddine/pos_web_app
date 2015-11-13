@@ -92,7 +92,7 @@ include '../header.php';
 										<div class="form-group" style="margin-bottom: 2.5%;">
 											<label class="control-label col-md-2">Product Category</label>
 											<div class="col-md-4">
-												<select class="form-control select2me" name="category">
+												<select class="form-control" name="category">
 													<?php
 													$sqlSelctCategories = "SELECT * FROM CATEGORIES ORDER BY (NAME)";
 													$result = $c->query ( $sqlSelctCategories );
