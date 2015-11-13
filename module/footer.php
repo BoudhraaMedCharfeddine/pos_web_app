@@ -129,8 +129,7 @@ jQuery(document).ready(function() {
 	type="text/javascript"></script>
 <!-- END CORE PLUGINS -->
 <!-- BEGIN PAGE LEVEL PLUGINS -->
-<script type="text/javascript"
-	src="../../ressources/assets/global/plugins/select2/select2.min.js"></script>
+
 <script type="text/javascript"
 	src="../../ressources/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript"
@@ -139,6 +138,8 @@ jQuery(document).ready(function() {
 
 <script type="text/javascript" src="../../ressources/assets/global/plugins/jquery-validation/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="../../ressources/assets/global/plugins/jquery-validation/js/additional-methods.min.js"></script>
+<script type="text/javascript"
+	src="../../ressources/assets/global/plugins/select2/select2.min.js"></script>
 <script type="text/javascript" src="../../ressources/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 <script type="text/javascript" src="../../ressources/assets/global/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js"></script>
 <script type="text/javascript" src="../../ressources/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js"></script>
@@ -159,14 +160,14 @@ jQuery(document).ready(function() {
 
 <script src="../../ressources/assets/admin/pages/scripts/form-validation.js"></script>
 
-
 <script>
 jQuery(document).ready(function() {       
-   Metronic.init(); // init metronic core components
-Layout.init(); // init current layout
-Demo.init(); // init demo features
-   TableEditable.init();
-});
+	   Metronic.init(); // init metronic core components
+	Layout.init(); // init current layout
+	Demo.init(); // init demo features
+	   TableEditable.init();
+	   FormValidation.init();
+	});
 </script>
 
 <script>
@@ -179,11 +180,7 @@ Demo.init(); // init demo features
 });
 </script>
 
-<script>
-$(document).ready(function(){
-	$('#select2-drop-mask').text("All");
-});
-</script>
+
 
 <!-- END JAVASCRIPTS -->
 

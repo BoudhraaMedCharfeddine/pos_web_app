@@ -80,14 +80,14 @@ include '../header.php';
 									class="caption-subject font-green-sharp bold uppercase">Select
 									Category</span>
 							</div>
-							<div class="tools">
+							<div class="tools" style="display:none">
 								<a href="javascript:;" class="remove"> </a>
 							</div>
 						</div>
 						<div class="portlet-body">
 							<div class="portlet-body form">
 								<!-- BEGIN FORM-->
-								<form method="POST" class="form-horizontal">
+								<form method="post" class="form-horizontal">
 									<div class="form-body">
 										<div class="form-group" style="margin-bottom: 2.5%;">
 											<label class="control-label col-md-2">Product Category</label>
@@ -98,11 +98,13 @@ include '../header.php';
 													$result = $c->query ( $sqlSelctCategories );
 													?>
 																			
-													<option value="">All</option>
-													<?php while ( $rowSelCat = $result->fetch_assoc () ) {
-													$id_cat =$rowSelCat['ID'];
-													$name_cat =$rowSelCat['NAME'];
-													echo "<option value='$id_cat'>".$name_cat."</option>";
+													<option value="all">All</option>
+													<?php
+													
+													while ( $rowSelCat = $result->fetch_assoc () ) {
+														$id_cat = $rowSelCat ['ID'];
+														$name_cat = $rowSelCat ['NAME'];
+														echo "<option value='$id_cat'>" . $name_cat . "</option>";
 													}
 													?>
 													</select>
@@ -132,18 +134,22 @@ include '../header.php';
 									class="caption-subject font-green-sharp bold uppercase">Products
 									list</span>
 							</div>
-							<div class="tools">
+							<div class="tools" style="display:none">
 								<a href="javascript:;" class="reload"> </a>
 							</div>
 						</div>
 						<div class="portlet-body">
 							<?php
-							if(isset($_POST['btn_search'])){
-								$idCategory = $_POST['category'];
-								$sql = "SELECT * FROM PRODUCTS WHERE (CATEGORY = '$idCategory') AND
+							if (isset ( $_POST ['btn_search'] )) {
+								$idCategory = $_POST ['category'];
+								if ($idCategory == "all") {
+									$sql = "SELECT * FROM PRODUCTS WHERE (ID IN (SELECT PRODUCT FROM PRODUCTS_CAT))";
+								} else {
+									$sql = "SELECT * FROM PRODUCTS WHERE (CATEGORY = '$idCategory') AND
 								(ID IN (SELECT PRODUCT FROM PRODUCTS_CAT))";
-							}else{
-							$sql = "SELECT * FROM PRODUCTS WHERE (ID IN (SELECT PRODUCT FROM PRODUCTS_CAT))";
+								}
+							} else {
+								$sql = "SELECT * FROM PRODUCTS WHERE (ID IN (SELECT PRODUCT FROM PRODUCTS_CAT))";
 							}
 							?>
 							
@@ -151,13 +157,14 @@ include '../header.php';
 								id="sample_editable_1">
 								<thead>
 									<tr>
+										<th>Category</th>
 										<th>Reference</th>
 										<th>Code</th>
 										<th>Name</th>
 										<th>Price buy</th>
-										<th>Price sell</th>
-										<th>Category</th>
+										<th>Price sell <b>HT</b></th>
 										<th>Tax Category</th>
+										<th>Price sell <b>TTC</th>
 										<th>Current Stock</th>
 										<th>Daily Stock</th>
 
@@ -180,12 +187,6 @@ include '../header.php';
 						
 						?>
 					<tr>
-										<td><?php echo $reference;?></td>
-										<td><?php echo $code;?></td>
-										<td><?php echo $name;?></td>
-										<td><?php echo round($priceBuy,2);?></td>
-										<td><?php echo round($pricesell,2);?></td>
-
 										<td><?php
 						$sqlChildCategory = "SELECT * FROM CATEGORIES WHERE ID = '$categoryId'";
 						$resultChildCategory = $c->query ( $sqlChildCategory );
@@ -194,6 +195,12 @@ include '../header.php';
 						}
 						echo $categoryName;
 						?></td>
+										<td><?php echo $reference;?></td>
+										<td><?php echo $code;?></td>
+										<td><?php echo $name;?></td>
+										<td><?php echo round($priceBuy,2);?></td>
+										<td><?php echo round($pricesell,2);?></td>
+
 
 										<td><?php
 						$sqlChildTaxCategory = "SELECT * FROM TAXCATEGORIES WHERE ID = '$taxCategoryId'";
@@ -203,6 +210,18 @@ include '../header.php';
 						}
 						echo $taxCategoryName;
 						?></td>
+										<td>
+				<?php
+						$sqlTax = "SELECT * FROM TAXES WHERE CATEGORY = '$taxCategoryId'";
+						$resultTax = $c->query ( $sqlTax );
+						while ( $rowTax = $resultTax->fetch_assoc () ) {
+							$tax = $rowTax ['RATE'];
+						}
+						echo round(($pricesell + ($pricesell*$tax)),2);
+				
+?>
+										
+										</td>
 
 										<td>
 										<?php
@@ -211,10 +230,10 @@ include '../header.php';
 						while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
 							$currentStock = $rowCurrentStock ['UNITS'];
 						}
-						if(! isset($currentStock)){
+						if (! isset ( $currentStock )) {
 							echo "<center>-</center>";
-						}else{
-						echo $currentStock;
+						} else {
+							echo $currentStock;
 						}
 						?></td>
 										</td>

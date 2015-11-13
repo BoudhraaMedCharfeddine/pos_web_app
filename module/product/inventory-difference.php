@@ -4,7 +4,7 @@ include '../../config/connexion.php';
 $cs = new CheckSession ();
 
 if (! $cs->check_user_session ()) {
-	header("Location:".$_SERVER['DOCUMENT_ROOT'].'./index.php');
+	header ( "Location:" . $_SERVER ['DOCUMENT_ROOT'] . './index.php' );
 }
 
 $dbc = new DbConnexion ();
@@ -82,7 +82,7 @@ include '../header.php';
 									class="caption-subject font-green-sharp bold uppercase">Select
 									Date</span>
 							</div>
-							<div class="tools">
+							<div class="tools" style="display:none" style="display:none">
 								<a href="javascript:;" class="remove"> </a>
 							</div>
 						</div>
@@ -140,7 +140,7 @@ include '../header.php';
 									class="caption-subject font-green-sharp bold uppercase">Products
 									mouvement</span>
 							</div>
-							<div class="tools">
+							<div class="tools" style="display:none">
 								<a href="javascript:;" class="reload"> </a>
 							</div>
 						</div>
@@ -155,6 +155,7 @@ include '../header.php';
 								id="sample_editable_1">
 								<thead>
 									<tr>
+										<th>Category</th>
 										<th>Reference</th>
 										<th>Code</th>
 										<th>Name</th>
@@ -182,6 +183,14 @@ include '../header.php';
 							
 							?>
 					<tr>
+										<td><?php
+							$sqlChildCategory = "SELECT * FROM CATEGORIES WHERE ID = '$categoryId'";
+							$resultChildCategory = $c->query ( $sqlChildCategory );
+							while ( $rowChildCategory = $resultChildCategory->fetch_assoc () ) {
+								$categoryName = $rowChildCategory ['NAME'];
+							}
+							echo $categoryName;
+							?></td>
 										<td><?php echo $reference;?></td>
 										<td><?php echo $code;?></td>
 										<td><?php echo $name;?></td>
@@ -190,17 +199,17 @@ include '../header.php';
 							?>
 										<td>
 										<?php
-						$sqlCurrentStock = "SELECT * FROM STOCKCURRENT WHERE PRODUCT = '$idProduct'";
-						$resultCurrentStock = $c->query ( $sqlCurrentStock );
-						while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
-							$currentStock = $rowCurrentStock ['UNITS'];
-						}
-						if(! isset($currentStock)){
-							echo "<center>-</center>";
-						}else{
-						echo $currentStock;
-						}
-						?></td>
+							$sqlCurrentStock = "SELECT * FROM STOCKCURRENT WHERE PRODUCT = '$idProduct'";
+							$resultCurrentStock = $c->query ( $sqlCurrentStock );
+							while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
+								$currentStock = $rowCurrentStock ['UNITS'];
+							}
+							if (! isset ( $currentStock )) {
+								echo "<center>-</center>";
+							} else {
+								echo $currentStock;
+							}
+							?></td>
 									<?php
 							$inStock = 0;
 							$outOfStock = 0;
@@ -267,12 +276,12 @@ include '../header.php';
 						$todayMorning = date ( "Y-m-d 00:00:00" );
 						$todayNight = date ( "Y-m-d 23:59:59" );
 						
-						if ($_POST ['start_date'] !="") {
-						$start = $date_start_date;
+						if ($_POST ['start_date'] != "") {
+							$start = $date_start_date;
 						} else {
-						$start = $todayMorning;	
+							$start = $todayMorning;
 						}
-						if ( $_POST ['end_date'] !="") {
+						if ($_POST ['end_date'] != "") {
 							$end = $date_end_date;
 						} else {
 							$end = $todayNight;
@@ -292,6 +301,14 @@ include '../header.php';
 							
 							?>
 											<tr>
+											<td><?php
+							$sqlChildCategory = "SELECT * FROM CATEGORIES WHERE ID = '$categoryId'";
+							$resultChildCategory = $c->query ( $sqlChildCategory );
+							while ( $rowChildCategory = $resultChildCategory->fetch_assoc () ) {
+								$categoryName = $rowChildCategory ['NAME'];
+							}
+							echo $categoryName;
+							?></td>
 										<td><?php echo $reference;?></td>
 										<td><?php echo $code;?></td>
 										<td><?php echo $name;?></td>
@@ -300,13 +317,13 @@ include '../header.php';
 							?>
 																<td>
 										<?php
-						$sqlCurrentStock = "SELECT * FROM STOCKCURRENT WHERE PRODUCT = '$idProduct'";
-						$resultCurrentStock = $c->query ( $sqlCurrentStock );
-						while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
-							$currentStock = $rowCurrentStock ['UNITS'];
-						}
-						echo $currentStock;
-						?></td>
+							$sqlCurrentStock = "SELECT * FROM STOCKCURRENT WHERE PRODUCT = '$idProduct'";
+							$resultCurrentStock = $c->query ( $sqlCurrentStock );
+							while ( $rowCurrentStock = $resultCurrentStock->fetch_assoc () ) {
+								$currentStock = $rowCurrentStock ['UNITS'];
+							}
+							echo $currentStock;
+							?></td>
 															<?php
 							$inStock = 0;
 							$outOfStock = 0;
